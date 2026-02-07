@@ -4,7 +4,7 @@
 const AUTH_CONFIG = {
     // ⚠️ SAU KHI DEPLOY WORKER, THAY URL NÀY:
     // Ví dụ: 'https://ielts-game-api.your-subdomain.workers.dev'
-    API_URL: 'https://ielts-game-api.YOUR_SUBDOMAIN.workers.dev',
+    API_URL: 'https://ieltsgame.pages.dev/',
     
     FREE_QUESTION_LIMIT: 100,
     STORAGE_KEYS: {

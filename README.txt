@@ -1,115 +1,62 @@
-🚀 HƯỚNG DẪN DEPLOY ĐƠN GIẢN
-============================
+📁 FRONTEND FILES - UPLOAD VÀO HOSTING
+========================================
 
-📦 THƯ MỤC NÀY GỒM:
--------------------
-✅ wrangler.toml       - Config Cloudflare Worker
-✅ worker.js           - API Backend
-✅ schema.sql          - Database schema  
-✅ auth.js             - Client authentication library
-✅ login.html          - Trang đăng nhập (ĐÃ SỬA LỖI)
-✅ game.html           - Game chính
+Folder này chỉ chứa 3 files cần upload lên hosting:
+
+✅ index.html       ← Trang đăng nhập (đã đổi tên từ login.html)
+✅ game.html        ← Game chính
+✅ auth.js          ← Authentication library
 
 
-🎯 BƯỚC 1: CÀI ĐẶT & SETUP CLOUDFLARE
-======================================
+🚀 CÁCH UPLOAD:
+===============
 
-1. Cài Wrangler CLI:
-   npm install -g wrangler
+BƯỚC 1: Cập nhật URL API trong auth.js
+---------------------------------------
+Mở file: auth.js
+Tìm dòng 8:
+   API_URL: 'https://ielts-game-api.YOUR_SUBDOMAIN.workers.dev',
 
-2. Đăng nhập Cloudflare:
-   wrangler login
-
-
-🎯 BƯỚC 2: TẠO DATABASE VÀ KV
-==============================
-
-1. Tạo D1 Database:
-   wrangler d1 create ielts-game-db
-   
-   → Copy DATABASE_ID từ output (dạng: abc123-def456...)
-
-2. Chạy schema SQL:
-   wrangler d1 execute ielts-game-db --file=schema.sql
-
-3. Tạo KV Namespace:
-   wrangler kv:namespace create "PAYMENTS"
-   
-   → Copy KV_ID từ output
+Thay YOUR_SUBDOMAIN bằng URL Worker thực tế của bạn
+Ví dụ: API_URL: 'https://ielts-game-api.abc123.workers.dev',
 
 
-🎯 BƯỚC 3: CẬP NHẬT CONFIG
-==========================
+BƯỚC 2: Upload 3 files này vào ROOT của hosting
+------------------------------------------------
 
-Mở file wrangler.toml và điền:
+VERCEL:
+1. Kéo cả folder "frontend-only" vào Vercel
+2. Deploy → Xong!
 
-Line 9:  database_id = "PASTE_DATABASE_ID_Ở_ĐÂY"
-Line 14: id = "PASTE_KV_ID_Ở_ĐÂY"
+NETLIFY:
+1. Kéo thả folder vào Netlify Drop
+2. Deploy → Xong!
 
+GITHUB PAGES:
+1. Push 3 files vào repo
+2. Enable GitHub Pages → Xong!
 
-🎯 BƯỚC 4: DEPLOY WORKER
-=========================
-
-wrangler deploy
-
-→ Lưu lại URL Worker (ví dụ: https://ielts-game-api.abc123.workers.dev)
-
-
-🎯 BƯỚC 5: CẬP NHẬT URL API
-============================
-
-Mở file auth.js:
-
-Line 8: API_URL: 'PASTE_WORKER_URL_Ở_ĐÂY'
-
-Ví dụ:
-API_URL: 'https://ielts-game-api.abc123.workers.dev'
+CLOUDFLARE PAGES:
+1. Upload folder hoặc connect Git
+2. Deploy → Xong!
 
 
-🎯 BƯỚC 6: UPLOAD LÊN HOSTING
-==============================
-
-Upload 3 files này lên hosting (Vercel/Netlify/GitHub Pages):
-✅ login.html
-✅ game.html  
-✅ auth.js
+BƯỚC 3: Truy cập website
+-------------------------
+https://your-site.com/          → Trang login (index.html)
+https://your-site.com/game.html → Game
 
 
-✨ XONG! Vậy là deploy thành công rồi!
-
-
-🧪 KIỂM TRA:
-============
-
-1. Mở trang login
-2. Đăng ký tài khoản mới
-3. Đăng nhập
-4. Chơi game
-
-
-📊 XEM DATABASE:
-================
-
-wrangler d1 execute ielts-game-db --command="SELECT * FROM users"
-
-
-🔍 XEM LOGS:
-============
-
-wrangler tail
+✅ CHECKLIST:
+=============
+[ ] Đã update API_URL trong auth.js
+[ ] Đã upload cả 3 files
+[ ] Đã test mở trang chủ
+[ ] Đã test đăng ký/đăng nhập
 
 
 ⚠️ LƯU Ý:
 ==========
-
-• Đổi thông tin ngân hàng trong worker.js (line 305-310)
-• FREE users: 100 câu hỏi
-• VIP users: Không giới hạn + mở khóa themes
-
-
-📞 NẾU GẶP LỖI:
-===============
-
-1. Check Browser Console (F12)
-2. Check Worker Logs: wrangler tail
-3. Kiểm tra URL API trong auth.js đã đúng chưa
+- 3 files này PHẢI ở cùng thư mục ROOT
+- Phải có Cloudflare Worker đã deploy trước
+- API_URL phải đúng với Worker URL

@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Đăng nhập - IELTS Vocabulary</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+            padding: 60px 0;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            animation: bgFloat 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes bgFloat {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(20px, 20px); }
+        }
+
+        /* Floating emoji particles - Trôi rõ hơn và nổi bật */
+        .emoji-particle {
+            position: fixed;
+            font-size: 3rem; /* Tăng từ 2rem lên 3rem */
+            opacity: 0.9; /* Tăng từ 0.6 lên 0.9 */
+            pointer-events: none;
+            z-index: 1;
+            animation: float linear infinite;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 
+                         0 0 40px rgba(255, 255, 255, 0.5); /* Thêm glow effect */
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3)); /* Thêm bóng đổ */
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg) scale(0.8);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.9;
+                transform: translateY(90vh) rotate(36deg) scale(1);
+            }
+            90% {
+                opacity: 0.9;
+                transform: translateY(-50px) rotate(324deg) scale(1);
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg) scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        /* Avatar Button - góc phải trên */
+        #avatarButton {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4); }
+        }
+
+        #avatarButton:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        #avatarButton.vip {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border-color: #ffa500;
+            animation: pulseVIP 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseVIP {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+            }
+            50% { 
+                transform: scale(1.08); 
+                box-shadow: 0 12px 35px rgba(255, 215, 0, 0.7);
+            }
+        }
+
+        /* Account Info Popup */
+        #accountInfoPopup {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95); /* Thêm độ trong suốt nhẹ */
+            backdrop-filter: blur(10px); /* Hiệu ứng blur */
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.4);
+            z-index: 999;
+            width: 320px;
+            transform: scale(0);
+            transform-origin: top right;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        #accountInfoPopup.show {
+            transform: scale(1);
+        }
+
+        .popup-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(240, 240, 240, 0.8);
+        }
+
+        .popup-header h3 {
+            color: #1e3c72;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .popup-header .username {
+            color: #666;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .popup-header .badge {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .popup-header .badge.vip {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+        }
+
+        .popup-header .badge.free {
+            background: rgba(30, 60, 114, 0.1);
+            color: #1e3c72;
+        }
+
+        .emoji-selector {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(248, 249, 250, 0.7);
+            backdrop-filter: blur(5px);
+            border-radius: 12px;
+        }
+
+        .emoji-selector-title {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .emoji-option {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .emoji-option:hover {
+            transform: scale(1.1);
+            border-color: #667eea;
+        }
+
+        .emoji-option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .emoji-option.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .emoji-option.locked::after {
+            content: '🔒';
+            position: absolute;
+            font-size: 0.9rem;
+            bottom: -2px;
+            right: -2px;
+        }
+
+        .popup-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .popup-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .popup-btn.primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .popup-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .popup-btn.secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #1e3c72;
+            border: 2px solid rgba(30, 60, 114, 0.2);
+        }
+
+        .popup-btn.secondary:hover {
+            background: rgba(240, 240, 240, 0.9);
+        }
+
+        .popup-info {
+            background: rgba(248, 249, 250, 0.7);
+            backdrop-filter: blur(5px);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        /* Main Container - CẢI THIỆN: Trong suốt với backdrop blur */
+        .container {
+            background: rgba(255, 255, 255, 0.15); /* Thay đổi: Trong suốt thay vì trắng đục */
+            backdrop-filter: blur(20px); /* Thêm: Hiệu ứng blur mạnh */
+            -webkit-backdrop-filter: blur(20px); /* Safari support */
+            border: 1px solid rgba(255, 255, 255, 0.3); /* Thêm: Viền nhẹ để nổi bật */
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
+                        0 0 100px rgba(255, 255, 255, 0.1) inset; /* Hiệu ứng glass */
+            width: 90%;
+            max-width: 450px;
+            padding: 40px 30px;
+            position: relative;
+            z-index: 10;
+            animation: slideUp 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes slideUp {
+            0% {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Logo - CẢI THIỆN: Màu sáng để nổi bật trên nền trong suốt */
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #ffffff, #e0e7ff); /* Thay đổi: Màu sáng */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.3); /* Thêm shadow để nổi */
+        }
+
+        .logo p {
+            color: rgba(255, 255, 255, 0.9); /* Thay đổi: Màu trắng với độ trong suốt */
+            font-size: 0.95rem;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1); /* Trong suốt */
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Forms */
+        .form-container {
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.95); /* Thay đổi: Màu sáng */
+            font-weight: 500;
+            font-size: 0.95rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 45px 14px 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3); /* Viền trong suốt */
+            background: rgba(255, 255, 255, 0.15); /* Nền trong suốt */
+            backdrop-filter: blur(10px);
+            color: #ffffff; /* Màu chữ trắng */
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5); /* Placeholder sáng màu */
+        }
+
+        .form-group input:focus {
+            border-color: rgba(102, 126, 234, 0.8);
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.2s;
+        }
+
+        .toggle-password:hover {
+            transform: scale(1.1);
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 15px 0;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
+        }
+
+        .submit-btn:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Messages */
+        .message {
+            padding: 12px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 0.95rem;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.success {
+            background: rgba(76, 175, 80, 0.2);
+            backdrop-filter: blur(5px);
+            color: #a7f3d0;
+            border: 1px solid rgba(76, 175, 80, 0.5);
+            display: block;
+        }
+
+        .message.error {
+            background: rgba(244, 67, 54, 0.2);
+            backdrop-filter: blur(5px);
+            color: #fecaca;
+            border: 1px solid rgba(244, 67, 54, 0.5);
+            display: block;
+        }
+
+        /* Guest Play Button */
+        .guest-play {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .guest-play p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+
+        .guest-btn {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .guest-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Remaining plays counter */
+        .remaining-plays {
+            background: rgba(255, 107, 107, 0.15);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 107, 107, 0.4);
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 0.9rem;
+        }
+
+        .remaining-plays .count {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fecaca;
+            margin-top: 5px;
+        }
+
+        .remaining-plays.hidden {
+            display: none;
+        }
+
+        /* Footer Links */
+        .footer-links {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: rgba(255, 255, 255, 1);
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .logo h1 {
+                font-size: 1.6rem;
+            }
+
+            #avatarButton {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+
+            #accountInfoPopup {
+                width: calc(100% - 40px);
+                right: 20px;
+            }
+
+            .emoji-particle {
+                font-size: 2.5rem; /* Nhỏ hơn trên mobile nhưng vẫn lớn hơn bản gốc */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating emoji particles -->
+    <div id="floatingEmojis"></div>
+
+    <!-- Avatar button (top right) -->
+    <div id="avatarButton" onclick="toggleAccountInfo()">
+        <span id="avatarEmoji">👨🏻‍🚀</span>
+    </div>
+
+    <!-- Account Info Popup -->
+    <div id="accountInfoPopup">
+        <div class="popup-header">
+            <h3>Thông tin tài khoản</h3>
+            <div class="username" id="popupUsername">Chưa đăng nhập</div>
+            <span class="badge" id="popupBadge">FREE</span>
+        </div>
+
+        <div class="emoji-selector">
+            <div class="emoji-selector-title">Chọn avatar của bạn:</div>
+            <div class="emoji-grid" id="emojiGrid">
+                <!-- Free emojis -->
+                <div class="emoji-option" onclick="selectEmoji('👨🏻‍🚀')">👨🏻‍🚀</div>
+                <div class="emoji-option" onclick="selectEmoji('👩🏻‍🚀')">👩🏻‍🚀</div>
+                <div class="emoji-option" onclick="selectEmoji('🧑🏻‍💼')">🧑🏻‍💼</div>
+                <div class="emoji-option" onclick="selectEmoji('👨🏻‍🎓')">👨🏻‍🎓</div>
+                <div class="emoji-option" onclick="selectEmoji('👩🏻‍🎓')">👩🏻‍🎓</div>
+                
+                <!-- VIP emojis -->
+                <div class="emoji-option locked" onclick="selectEmoji('🦸🏻')">🦸🏻</div>
+                <div class="emoji-option locked" onclick="selectEmoji('🦹🏻')">🦹🏻</div>
+                <div class="emoji-option locked" onclick="selectEmoji('🧙🏻')">🧙🏻</div>
+                <div class="emoji-option locked" onclick="selectEmoji('🧚🏻')">🧚🏻</div>
+                <div class="emoji-option locked" onclick="selectEmoji('🧛🏻')">🧛🏻</div>
+                <div class="emoji-option locked" onclick="selectEmoji('🎅🏻')">🎅🏻</div>
+                <div class="emoji-option locked" onclick="selectEmoji('👸🏻')">👸🏻</div>
+                <div class="emoji-option locked" onclick="selectEmoji('🤴🏻')">🤴🏻</div>
+                <div class="emoji-option locked" onclick="selectEmoji('👰🏻')">👰🏻</div>
+                <div class="emoji-option locked" onclick="selectEmoji('🤵🏻')">🤵🏻</div>
+            </div>
+        </div>
+
+        <div class="popup-info" id="popupInfo">
+            <strong>📌 Tài khoản FREE:</strong><br>
+            200 lượt chơi, chỉ giao diện Gradient
+        </div>
+
+        <div class="popup-actions">
+            <button class="popup-btn primary" onclick="goToGame()">🎮 Vào Game</button>
+            <button class="popup-btn secondary" id="logoutBtn" onclick="handleLogout()" style="display: none;">Đăng xuất</button>
+        </div>
+    </div>
+
+    <!-- Main container -->
+    <div class="container">
+        <div class="logo">
+            <h1>📚 IELTS Vocab</h1>
+            <p>3500 từ vựng phổ biến IELTS 5.0-7.0</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('login')">Đăng nhập</button>
+            <button class="tab-btn" onclick="switchTab('register')">Đăng ký</button>
+        </div>
+
+        <!-- Login Form -->
+        <div class="form-container active" id="loginForm">
+            <form onsubmit="handleLogin(event)">
+                <!-- Remaining plays for guest -->
+                <div class="remaining-plays hidden" id="remainingPlays">
+                    <div>🎮 Số lượt chơi còn lại</div>
+                    <div class="count" id="remainingCount">100/100</div>
+                </div>
+
+                <div class="form-group">
+                    <label>👤 Tên đăng nhập</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="loginUsername" 
+                            placeholder="Nhập tên đăng nhập..."
+                            autocomplete="username"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>🔒 Mật khẩu</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="password" 
+                            id="loginPassword" 
+                            placeholder="Nhập mật khẩu..."
+                            autocomplete="current-password"
+                        >
+                        <span class="toggle-password" onclick="togglePassword('loginPassword')">👁️</span>
+                    </div>
+                </div>
+
+                <div class="remember-me">
+                    <input type="checkbox" id="rememberMe">
+                    <label for="rememberMe">Ghi nhớ đăng nhập</label>
+                </div>
+
+                <div class="message" id="loginMessage"></div>
+
+                <button type="submit" class="submit-btn" id="loginBtn">
+                    Đăng nhập
+                </button>
+            </form>
+
+            <div class="guest-play">
+                <p>Hoặc chơi ngay không cần đăng nhập:</p>
+                <button class="guest-btn" onclick="playAsGuest()">
+                    🎮 Chơi ngay (FREE)
+                </button>
+            </div>
+        </div>
+
+        <!-- Register Form -->
+        <div class="form-container" id="registerForm">
+            <form onsubmit="handleRegister(event)">
+                <!-- Remaining plays for guest -->
+                <div class="remaining-plays hidden" id="remainingPlaysRegister">
+                    <div>🎮 Số lượt chơi còn lại</div>
+                    <div class="count" id="remainingCountRegister">100/100</div>
+                </div>
+
+                <div class="form-group">
+                    <label>👤 Tên đăng nhập</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="registerUsername" 
+                            placeholder="Nhập tên đăng nhập..."
+                            autocomplete="username"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>🔒 Mật khẩu</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="password" 
+                            id="registerPassword" 
+                            placeholder="Nhập mật khẩu..."
+                            autocomplete="new-password"
+                        >
+                        <span class="toggle-password" onclick="togglePassword('registerPassword')">👁️</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>🔒 Xác nhận mật khẩu</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="password" 
+                            id="registerPasswordConfirm" 
+                            placeholder="Nhập lại mật khẩu..."
+                            autocomplete="new-password"
+                        >
+                        <span class="toggle-password" onclick="togglePassword('registerPasswordConfirm')">👁️</span>
+                    </div>
+                </div>
+
+                <div class="message" id="registerMessage"></div>
+
+                <button type="submit" class="submit-btn" id="registerBtn">
+                    Đăng ký
+                </button>
+            </form>
+
+            <div class="guest-play">
+                <p>Hoặc chơi ngay không cần đăng nhập:</p>
+                <button class="guest-btn" onclick="playAsGuest()">
+                    🎮 Chơi ngay (FREE)
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-links">
+            <a href="/cdn-cgi/l/email-protection#8efdfbfefee1fcfacee7ebe2fafda3f8e1edefeca0ede1e3">📧 Liên hệ hỗ trợ</a>
+        </div>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="auth.js"></script>
+    <script>
+        // Create floating emojis
+        function createFloatingEmojis() {
+            const container = document.getElementById('floatingEmojis');
+            const emojis = ['📚', '📖', '✏️', '🎓', '⭐', '💡', '🚀', '🏆', '🎯', '💪', '🌟', '🔥'];
+            
+            for (let i = 0; i < 25; i++) { // Tăng số lượng từ 15 lên 25
+                const emoji = document.createElement('div');
+                emoji.className = 'emoji-particle';
+                emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                emoji.style.left = Math.random() * 100 + '%';
+                emoji.style.animationDuration = (10 + Math.random() * 15) + 's'; // 10-25s thay vì 15-30s
+                emoji.style.animationDelay = Math.random() * 10 + 's';
+                container.appendChild(emoji);
+            }
+        }
+
+        // Toggle account info popup
+        function toggleAccountInfo() {
+            const popup = document.getElementById('accountInfoPopup');
+            popup.classList.toggle('show');
+        }
+
+        // Close popup when clicking outside
+        document.addEventListener('click', (e) => {
+            const popup = document.getElementById('accountInfoPopup');
+            const button = document.getElementById('avatarButton');
+            
+            if (!popup.contains(e.target) && !button.contains(e.target)) {
+                popup.classList.remove('show');
+            }
+        });
+
+        // Select emoji avatar
+        function selectEmoji(emoji) {
+            const isVIP = UserManager.isVIP();
+            const vipEmojis = ['🦸🏻', '🦹🏻', '🧙🏻', '🧚🏻', '🧛🏻', '🎅🏻', '👸🏻', '🤴🏻', '👰🏻', '🤵🏻'];
+            
+            if (vipEmojis.includes(emoji) && !isVIP) {
+                alert('⭐ Chức năng này chỉ dành cho VIP!\n\nNâng cấp VIP để mở khóa tất cả avatar và giao diện đặc biệt.');
+                return;
+            }
+            
+            // Update avatar display
+            document.getElementById('avatarEmoji').textContent = emoji;
+            
+            // Save to localStorage
+            localStorage.setItem('ielts_user_avatar', emoji);
+            
+            // Update selected state
+            document.querySelectorAll('.emoji-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+        }
+
+        // Update account popup info
+        function updateAccountPopup() {
+            const currentUser = UserManager.getCurrentUser();
+            const isVIP = UserManager.isVIP();
+            
+            if (currentUser) {
+                // Đã đăng nhập
+                document.getElementById('popupUsername').textContent = currentUser.username;
+                document.getElementById('popupBadge').textContent = isVIP ? '⭐ VIP' : 'FREE';
+                document.getElementById('popupBadge').className = isVIP ? 'badge vip' : 'badge free';
+                document.getElementById('logoutBtn').style.display = 'block';
+                
+                // Unlock emoji cho VIP
+                const emojiOptions = document.querySelectorAll('.emoji-option');
+                emojiOptions.forEach(opt => {
+                    if (isVIP) {
+                        opt.classList.remove('locked');
+                    }
+                });
+                
+                // Update info text
+                if (isVIP) {
+                    document.getElementById('popupInfo').innerHTML = '<strong>⭐ Tài khoản VIP:</strong><br>Không giới hạn lượt chơi, mở khóa tất cả giao diện';
+                    document.getElementById('avatarButton').classList.add('vip');
+                } else {
+                    const remaining = QuestionLimitManager.getRemainingQuestions();
+                    document.getElementById('popupInfo').innerHTML = `<strong>📌 Tài khoản FREE:</strong><br>Còn ${remaining}/200 lượt chơi`;
+                    document.getElementById('avatarButton').classList.remove('vip');
+                }
+                
+                // Load saved avatar
+                const savedAvatar = localStorage.getItem('ielts_user_avatar') || '👨🏻‍🚀';
+                document.getElementById('avatarEmoji').textContent = savedAvatar;
+                
+            } else {
+                // Chưa đăng nhập
+                document.getElementById('popupUsername').textContent = 'Chưa đăng nhập';
+                document.getElementById('popupBadge').textContent = 'FREE';
+                document.getElementById('popupBadge').className = 'badge free';
+                document.getElementById('logoutBtn').style.display = 'none';
+                document.getElementById('popupInfo').innerHTML = '<strong>📌 Tài khoản FREE:</strong><br>200 lượt chơi, chỉ giao diện Gradient';
+                document.getElementById('avatarButton').classList.remove('vip');
+            }
+        }
+
+        // Switch tabs
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const forms = document.querySelectorAll('.form-container');
+            
+            tabs.forEach(btn => btn.classList.remove('active'));
+            forms.forEach(form => form.classList.remove('active'));
+            
+            if (tab === 'login') {
+                tabs[0].classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('registerForm').classList.add('active');
+            }
+            
+            clearMessages();
+        }
+
+        // Toggle password
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling;
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                icon.textContent = '👁️';
+            }
+        }
+
+        // Show message
+        function showMessage(elementId, message, type) {
+            const messageDiv = document.getElementById(elementId);
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+        }
+
+        // Clear messages
+        function clearMessages() {
+            const messages = document.querySelectorAll('.message');
+            messages.forEach(msg => {
+                msg.style.display = 'none';
+                msg.className = 'message';
+            });
+        }
+
+        // Handle login - FIXED with async/await
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const btn = document.getElementById('loginBtn');
+            
+            if (!username || !password) {
+                showMessage('loginMessage', 'Vui lòng điền đầy đủ thông tin!', 'error');
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span>Đang đăng nhập...';
+            clearMessages();
+            
+            try {
+                const result = await UserManager.login(username, password);
+                
+                if (result.success) {
+                    if (rememberMe) {
+                        localStorage.setItem('ielts_remember_me', 'true');
+                    }
+                    
+                    showMessage('loginMessage', '✅ Đăng nhập thành công!', 'success');
+                    updateAccountPopup();
+                    
+                    setTimeout(() => {
+                        window.location.href = 'game.html';
+                    }, 1000);
+                } else {
+                    showMessage('loginMessage', result.message, 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'Đăng nhập';
+                }
+            } catch (error) {
+                showMessage('loginMessage', 'Lỗi kết nối! Vui lòng thử lại.', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Đăng nhập';
+            }
+        }
+
+        // Handle register - FIXED with async/await
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('registerUsername').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+            const btn = document.getElementById('registerBtn');
+            
+            if (!username || !password || !passwordConfirm) {
+                showMessage('registerMessage', 'Vui lòng điền đầy đủ thông tin!', 'error');
+                return;
+            }
+            
+            if (password !== passwordConfirm) {
+                showMessage('registerMessage', 'Mật khẩu xác nhận không khớp!', 'error');
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span>Đang đăng ký...';
+            clearMessages();
+            
+            try {
+                const result = await UserManager.register(username, password);
+                
+                if (result.success) {
+                    showMessage('registerMessage', '✅ Đăng ký thành công! Đang chuyển...', 'success');
+                    setTimeout(() => {
+                        document.getElementById('loginUsername').value = username;
+                        document.getElementById('loginPassword').value = password;
+                        switchTab('login');
+                    }, 1500);
+                } else {
+                    showMessage('registerMessage', result.message, 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'Đăng ký';
+                }
+            } catch (error) {
+                showMessage('registerMessage', 'Lỗi kết nối! Vui lòng thử lại.', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Đăng ký';
+            }
+        }
+
+        // Chơi ngay
+        function playAsGuest() {
+            localStorage.setItem('playAsGuest', 'true');
+            localStorage.setItem('ielts_question_count', '0');
+            UserManager.logout();
+            window.location.href = 'game.html';
+        }
+
+        // Go to game
+        function goToGame() {
+            window.location.href = 'game.html';
+        }
+
+        // Handle logout
+        function handleLogout() {
+            if (confirm('Bạn có chắc muốn đăng xuất?')) {
+                UserManager.logout();
+                localStorage.removeItem('ielts_remember_me');
+                window.location.reload();
+            }
+        }
+
+        // Update remaining plays
+        function updateRemainingPlaysDisplay() {
+            const isGuest = localStorage.getItem('playAsGuest') === 'true';
+            const isLoggedIn = UserManager.isLoggedIn();
+            
+            if (isGuest || (isLoggedIn && !UserManager.isVIP())) {
+                const remaining = QuestionLimitManager.getRemainingQuestions();
+                
+                const displays = [
+                    { el: document.getElementById('remainingPlays'), count: document.getElementById('remainingCount') },
+                    { el: document.getElementById('remainingPlaysRegister'), count: document.getElementById('remainingCountRegister') }
+                ];
+                
+                displays.forEach(d => {
+                    if (d.el && d.count) {
+                        d.el.classList.remove('hidden');
+                        d.count.textContent = `${remaining}/100`;
+                    }
+                });
+            }
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            createFloatingEmojis();
+            updateAccountPopup();
+            updateRemainingPlaysDisplay();
+            
+            const isGuest = localStorage.getItem('playAsGuest') === 'true';
+            if

@@ -1,0 +1,48 @@
+⚡ HƯỚNG DẪN NHANH - 5 BƯỚC DEPLOY
+==================================
+
+BƯỚC 1: CÀI WRANGLER
+---------------------
+npm install -g wrangler
+wrangler login
+
+
+BƯỚC 2: TẠO DATABASE & KV
+--------------------------
+wrangler d1 create ielts-game-db
+→ Copy DATABASE_ID → Paste vào wrangler.toml line 9
+
+wrangler d1 execute ielts-game-db --file=schema.sql
+
+wrangler kv:namespace create "PAYMENTS"
+→ Copy KV_ID → Paste vào wrangler.toml line 14
+
+
+BƯỚC 3: DEPLOY WORKER
+----------------------
+wrangler deploy
+→ Copy WORKER_URL
+
+
+BƯỚC 4: CẬP NHẬT URL
+---------------------
+Mở auth.js line 8:
+API_URL: 'PASTE_WORKER_URL_ở_đây'
+
+
+BƯỚC 5: UPLOAD LÊN HOSTING
+---------------------------
+Upload 3 files:
+- login.html
+- game.html
+- auth.js
+
+
+✅ XONG!
+
+
+=====================================
+HOẶC DÙNG SCRIPT TỰ ĐỘNG:
+chmod +x deploy.sh
+./deploy.sh
+=====================================

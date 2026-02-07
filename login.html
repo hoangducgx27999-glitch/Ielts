@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Đăng nhập - IELTS Vocabulary Game</title>
+    <script src="auth.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            animation: bgFloat 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes bgFloat {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(20px, 20px); }
+        }
+
+        /* Floating particles */
+        .particle {
+            position: fixed;
+            font-size: 2rem;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Container */
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        /* Login Box - TRONG SUỐT HƠN */
+        .login-box {
+            background: rgba(255, 255, 255, 0.08);  /* Giảm từ 0.15 xuống 0.08 */
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 40px 35px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);  /* Giảm từ 0.1 */
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.15);  /* Giảm từ 0.25 */
+            border-color: rgba(255, 255, 255, 0.4);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 14px 45px 14px 18px;
+            background: rgba(255, 255, 255, 0.08);  /* Giảm từ 0.15 */
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .input-wrapper input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.12);  /* Giảm từ 0.2 */
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.3rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Remember me */
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .remember-me label {
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);  /* Giảm từ 0.15 */
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);  /* Giảm từ 0.2 */
+            transform: translateY(-2px);
+        }
+
+        /* Message */
+        .message {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .divider span {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+        }
+
+        /* Contact Info */
+        .contact-info {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);  /* Giảm từ 0.08 */
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .contact-info h3 {
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+        }
+
+        .contact-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .contact-item a {
+            color: #60a5fa;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .contact-item a:hover {
+            color: #93c5fd;
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 25px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-box {
+                padding: 30px 25px;
+            }
+
+            .header h1 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particles -->
+    <div class="particle" style="left: 10%; animation-duration: 12s; animation-delay: 0s;">📚</div>
+    <div class="particle" style="left: 20%; animation-duration: 15s; animation-delay: 2s;">✨</div>
+    <div class="particle" style="left: 30%; animation-duration: 18s; animation-delay: 4s;">🎓</div>
+    <div class="particle" style="left: 70%; animation-duration: 14s; animation-delay: 1s;">📖</div>
+    <div class="particle" style="left: 80%; animation-duration: 16s; animation-delay: 3s;">💡</div>
+    <div class="particle" style="left: 90%; animation-duration: 13s; animation-delay: 5s;">🌟</div>
+
+    <div class="container">
+        <div class="login-box">
+            <!-- Header -->
+            <div class="header">
+                <h1>🎯 IELTS Vocabulary</h1>
+                <p>3500 từ vựng IELTS 5.0-7.0</p>
+            </div>
+
+            <!-- Message -->
+            <div class="message" id="message"></div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab active" data-tab="login">Đăng nhập</div>
+                <div class="tab" data-tab="register">Đăng ký</div>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Tên đăng nhập</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="loginUsername" placeholder="Nhập tên đăng nhập" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Mật khẩu</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="loginPassword" placeholder="Nhập mật khẩu" required>
+                        <span class="toggle-password" onclick="togglePassword('loginPassword')">👁️</span>
+                    </div>
+                </div>
+
+                <div class="remember-me">
+                    <input type="checkbox" id="rememberMe">
+                    <label for="rememberMe">Ghi nhớ đăng nhập</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary">🔐 Đăng nhập</button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="hidden">
+                <div class="form-group">
+                    <label>Tên đăng nhập</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="registerUsername" placeholder="3-20 ký tự" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Mật khẩu</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="registerPassword" placeholder="Ít nhất 6 ký tự" required>
+                        <span class="toggle-password" onclick="togglePassword('registerPassword')">👁️</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Xác nhận mật khẩu</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="registerPasswordConfirm" placeholder="Nhập lại mật khẩu" required>
+                        <span class="toggle-password" onclick="togglePassword('registerPasswordConfirm')">👁️</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">📝 Đăng ký</button>
+            </form>
+
+            <!-- Guest Play -->
+            <div class="divider"><span>hoặc</span></div>
+            <button class="btn btn-secondary" onclick="playAsGuest()">👤 Chơi ngay (Khách)</button>
+
+            <!-- Contact Info -->
+            <div class="contact-info">
+                <h3>📞 Liên hệ nhà phát triển</h3>
+                <div class="contact-item">
+                    <span>📱</span>
+                    <span>Zalo: <a href="https://zalo.me/0343767490" target="_blank">0343767490</a></span>
+                </div>
+                <div class="contact-item">
+                    <span>📧</span>
+                    <span>Email: <a href="mailto:qinghuacidian@gmail.com">qinghuacidian@gmail.com</a></span>
+                </div>
+                <div class="contact-item">
+                    <span>💎</span>
+                    <span>Nâng cấp PRO - Mở khóa tất cả tính năng</span>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <p>© 2024 IELTS Vocabulary Game</p>
+                <p>Made with ❤️ for IELTS learners</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                
+                // Update tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update forms
+                document.getElementById('loginForm').classList.toggle('hidden', tabName !== 'login');
+                document.getElementById('registerForm').classList.toggle('hidden', tabName !== 'register');
+                
+                // Clear message
+                hideMessage();
+            });
+        });
+
+        // Toggle password visibility
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        // Show message
+        function showMessage(text, type = 'success') {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = `message ${type}`;
+            message.style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    hideMessage();
+                }, 3000);
+            }
+        }
+
+        // Hide message
+        function hideMessage() {
+            const message = document.getElementById('message');
+            message.style.display = 'none';
+        }
+
+        // Login form submit
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            
+            const result = UserManager.login(username, password, rememberMe);
+            
+            if (result.success) {
+                showMessage(result.message, 'success');
+                setTimeout(() => {
+                    window.location.href = 'game.html';
+                }, 1000);
+            } else {
+                showMessage(result.message, 'error');
+            }
+        });
+
+        // Register form submit
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('registerUsername').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+            
+            if (password !== passwordConfirm) {
+                showMessage('Mật khẩu xác nhận không khớp!', 'error');
+                return;
+            }
+            
+            const result = UserManager.register(username, password);
+            
+            if (result.success) {
+                showMessage(result.message, 'success');
+                setTimeout(() => {
+                    // Switch to login tab
+                    document.querySelector('.tab[data-tab="login"]').click();
+                    document.getElementById('loginUsername').value = username;
+                }, 1500);
+            } else {
+                showMessage(result.message, 'error');
+            }
+        });
+
+        // Play as guest
+        function playAsGuest() {
+            const result = UserManager.playAsGuest();
+            if (result.success) {
+                window.location.href = 'game.html';
+            }
+        }
+
+        // Check if already logged in
+        window.addEventListener('DOMContentLoaded', function() {
+            const autoLogin = localStorage.getItem('ielts_auto_login');
+            const userData = localStorage.getItem('ielts_user_data');
+            
+            if (autoLogin === 'true' && userData) {
+                // Already logged in, redirect to game
+                window.location.href = 'game.html';
+            }
+        });
+    </script>
+</body>
+</html>
